@@ -2,7 +2,7 @@
 ## 标题
 ```
 标题：#
-注：多少个#代表多少级标题
+注：多少个#代表多少级标题（1～6）
 ```
 
 ## 列表
@@ -27,10 +27,8 @@
 ```
 链接：[]()
 图片：![]()
+注：需要控制图片大小请使用 <img src="" alt="test" style="zoom:50%" />
 ```
->![test](https://img2.rrcimg.com/rop/uploads/kiYpPGzWsOpHnAO9.png?imageView2/2/q/95/w/1500/format/webp)  
-
-<img src="https://img2.rrcimg.com/rop/uploads/kiYpPGzWsOpHnAO9.png?imageView2/2/q/95/w/1500/format/webp" alt="test" style="zoom:50%" />
 
 ## 强调
 ```

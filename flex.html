@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>flex指南</title>
+	<link rel="stylesheet" href="">
+	<style type="text/css" media="screen">
+		.annotate{
+			color: #c1b4b4;
+		}
+		.mt-0{
+			margin-top: 0
+		}
+		.show{
+			display: flex;
+			width: 100%;
+			flex-direction: row;
+			min-width: 800px;
+			min-height: 500px
+		}
+		.control{
+			flex: 270px;
+			flex-grow: 0;
+			flex-shrink: 0
+		}
+		.flex{
+			flex: 100%;
+			border: 1px solid #ddd;
+			background-color: #efefef;
+			display: flex
+		}
+		.flexBox{
+			background-color: #ff9955;
+			text-align: center;
+			line-height: 100px;
+			height:100px;
+			border: 1px solid #d5d5d5;
+		}
+		label{
+			display: block;
+		    -webkit-margin-before: 1em;
+		    -webkit-margin-after: 1em;
+		}
+		input{
+			box-sizing: border-box;
+			width: 113px;
+			cursor: default
+		}
+		.tip{
+			color: #1e8afe
+		}
+		.attribute{
+			color: #ff9955
+		}
+		.none{
+			display: none;
+		}
+		.active{
+			background-color: #1e8afe
+		}
+		#forflexBox label{
+			display: inline-block;
+			min-width: 37%
+		}
+	</style>
+	<script type="text/javascript" charset="utf-8" async defer>
+	var data = {
+			flex: {},
+			flexBox: {}
+		},
+		valChange = function(){
+
+		var that = event.srcElement,
+			newVal = that.value,
+			name = that.getAttribute('class'),
+			parentEle = that.parentNode,
+			index = parentEle.hasAttribute('data-idx')
+					? parentEle.getAttribute('data-idx')
+					: 0,
+			changeEle = document.getElementsByClassName(parentEle.id.replace('for', ''))[index],
+			attribute = that.id,
+			selectedOption = name == "select"
+								? that.selectedOptions[0]
+								: null,
+			newTitle = selectedOption
+						? selectedOption.getAttribute('title')
+						: null,
+			cssData,
+			cssTxt = '';
+
+			if(newTitle){
+				that.setAttribute('title', newTitle);
+				(newVal == '' || newVal == 'default')
+					? delete data.flex[attribute]
+					: (data.flex[attribute] = newVal);
+				cssData = data.flex;
+			}else{
+				data.flexBox[index] = data.flexBox[index] || {},
+				newVal == ''
+					? delete data.flexBox[index][attribute]
+					: (data.flexBox[index][attribute] = newVal);
+				cssData = data.flexBox[index];
+			}
+			for (var i in cssData) {
+				cssTxt += i+':'+cssData[i]+';'
+			}
+			changeEle.setAttribute('style', cssTxt);
+			// document.getElementById('css').innerHTML = cssTxt;
+		},
+		contentChange = function(){
+			event.stopPropagation();
+
+		var that = event.srcElement,
+			name = that.getAttribute('class'),
+			index = that.getAttribute('data-idx'),
+			forflex = document.getElementById('forflex'),
+			forflexBox = document.getElementById('forflexBox'),
+			active = document.getElementsByClassName('active')[0],
+			activeClass = active
+				 ? active.getAttribute('class')
+				 : '';
+
+			if(name.indexOf('active') != -1){
+				return;
+			}else if(index === null){
+				active
+				&& active.setAttribute('class',activeClass.replace(' active',''));
+				that.setAttribute('class',name + ' active');
+				toFlexMain();
+			}else{
+				active
+				&& active.setAttribute('class',activeClass.replace(' active',''));
+			that.setAttribute('class',name + ' active');
+			var obj = data.flexBox[index] || {};
+				forflexBox.reset();
+				for(var a in obj){
+					document.getElementById(a).value = obj[a];
+				}
+				forflex.setAttribute('class', 'none'),
+				forflexBox.removeAttribute('class'),
+				forflexBox.setAttribute('data-idx',index),
+				document.getElementById('item').textContent = 1 + parseInt(index)
+			}
+		},
+		toFlexMain = function(){
+			forflex.removeAttribute('class'),
+			forflexBox.setAttribute('class', 'none')
+		}/*,
+		showCss = function(){
+			
+		}*/
+	</script>
+</head>
+<body>
+	<div class="mian">
+		<h1>Flex 布局实测demo</h1>
+		<div class="show">
+			<div class="control">
+				<h2 class="mt-0">点击右侧容器可切换
+					<button type="button" onclick="toFlexMain()">Flex容器</button>
+					<!-- <button type="button" onclick="showCss()">查看css代码</button> -->
+				</h2>
+				<p class="annotate">鼠标悬停属性可查看注释</p>
+				<form id="forflex">
+					<p class="tip">Flex容器（flex container）</p>
+					<label class="attribute" title="[属性决定主轴的方向（即项目的排列方向）]" for="flex-direction">flex-direction:</label>
+					<select class="select" onchange="valChange()" title="主轴为水平方向，起点在左端。" id="flex-direction">
+						<option value="default" title="（默认值）主轴为水平方向，起点在左端。">row</option>
+						<option value="row-reverse" title="主轴为水平方向，起点在右端。">row-reverse</option>
+						<option value="column" title="主轴为垂直方向，起点在上沿。">column</option>
+						<option value="column-reverse" title="主轴为垂直方向，起点在下沿。">column-reverse</option>
+					</select>
+
+					<label class="attribute" title="[属性定义，如果一条轴线排不下，如何换行。]" for="flex-wrap">flex-wrap:</label>
+					<select class="select" onchange="valChange()" id="flex-wrap" title="(默认）不换行">
+						<option value="default" title="(默认）不换行">nowrap</option>
+						<option value="wrap" title="换行，第一行在上方。">wrap</option>
+						<option value="wrap-reverse" title="换行，第一行在下方。">wrap-reverse</option>
+					</select>
+
+					<label class="attribute" title="[flex-direction属性和flex-wrap属性的简写形式]">flex-flow:</label>
+					<select class="select" onchange="valChange()" title="主轴为水平方向，起点在左端。" id="flow-direction">
+						<option value="default" title="（默认值）主轴为水平方向，起点在左端。">row</option>
+						<option value="row-reverse" title="主轴为水平方向，起点在右端。">row-reverse</option>
+						<option value="column" title="主轴为垂直方向，起点在上沿。">column</option>
+						<option value="column-reverse" title="主轴为垂直方向，起点在下沿。">column-reverse</option>
+					</select>
+					<select class="select" onchange="valChange()" id="flow-wrap">
+						<option value="default" title="(默认）不换行">nowrap</option>
+						<option value="wrap" title="换行，第一行在上方。">wrap</option>
+						<option value="wrap-reverse" title="换行，第一行在下方。">wrap-reverse</option>
+					</select>
+
+					<label class="attribute" title="[属性定义了项目在主轴上的对齐方式。]" for="justify-content">justify-content:</label>
+					<select class="select" onchange="valChange()" id="justify-content" title="（默认值）左对齐">
+						<option value="default" title="（默认值）左对齐">flex-start</option>
+						<option value="flex-end" title="flex-end右对齐">flex-end</option>
+						<option value="center" title="居中">center</option>
+						<option value="space-between" title="两端对齐，项目之间的间隔都相等。">space-between</option>
+						<option value="space-around" title="每个项目两侧的间隔相等。所以，项目之间的间隔比项目与边框的间隔大一倍。">space-around</option>
+					</select>
+
+					<label class="attribute" title="[属性定义项目在交叉轴上如何对齐。]">align-items:</label>
+					<select class="select" onchange="valChange()" id="align-items" title="（默认值）如果项目未设置高度或设为auto，将占满整个容器的高度。">
+						<option value="default" title="（默认值）如果项目未设置高度或设为auto，将占满整个容器的高度。">stretch</option>
+						<option value="flex-start" title="交叉轴的起点对齐">flex-start</option>
+						<option value="flex-end" title="交叉轴的终点对齐。">flex-end</option>
+						<option value="center" title="交叉轴的中点对齐。">center</option>
+						<option value="baseline" title="项目的第一行文字的基线对齐。">baseline</option>
+					</select>
+
+					<label class="attribute" title="[属性定义了多根轴线的对齐方式。如果项目只有一根轴线，该属性不起作用。]">align-content:</label>
+					<select class="select" onchange="valChange()" id="align-content" title="（默认值）轴线占满整个交叉轴。">
+						<option value="default" title="（默认值）轴线占满整个交叉轴。">stretch</option>
+						<option value="flex-start" title="与交叉轴的起点对齐。">flex-start</option>
+						<option value="flex-end" title="与交叉轴的终点对齐。">flex-end</option>
+						<option value="center" title="与交叉轴的中点对齐。">center</option>
+						<option value="space-between" title="与交叉轴两端对齐，轴线之间的间隔平均分布。">space-between</option>
+						<option value="space-around" title="每根轴线两侧的间隔都相等。所以，轴线之间的间隔比轴线与边框的间隔大一倍。">space-around</option>
+					</select>
+				</form>
+				<form id="forflexBox" class="none" data-idx="">
+					<p class="tip">Flex项目（flex item<span id="item"></span>）</p>
+			        <label class="attribute" for="order" title="[属性定义项目的排列顺序。]">order:</label>
+					<input class="input" onchange="valChange()" id="order" type="number" placeholder="0" value="" title="数值越小，排列越靠前，默认为0">
+
+					<label class="attribute" for="flex-grow" title="[属性定义项目的放大比例。]">flex-grow:</label>
+					<input class="input" onchange="valChange()" id="flex-grow" type="number" placeholder="0" value="" title="默认为0，即如果存在剩余空间，也不放大。">
+
+					<label class="attribute" for="flex-shrink" title="[属性定义了项目的缩小比例。]">flex-shrink:</label>
+					<input class="input" onchange="valChange()" id="flex-shrink" type="number" placeholder="1" value="" title="默认为1，即如果空间不足，该项目将缩小">
+
+					<label class="attribute" for="flex-basis" title="[属性定义了在分配多余空间之前，项目占据的主轴空间（main size）,浏览器根据这个属性，计算主轴是否有多余空间。]">flex-basis:</label>
+					<input class="input" onchange="valChange()" id="flex-basis" type="text" placeholder="auto" value="" title="它的默认值为auto，即项目的本来大小。">
+
+					<label class="attribute" for="flex" title="[属性是flex-grow, flex-shrink 和 flex-basis的简写。]">flex:</label>
+					<input class="input" onchange="valChange()" id="flex" type="text" placeholder="0 1 auto" value="" title="默认值为0 1 auto。后两个属性可选">
+					<label class="attribute" for="align-self" title="[属性允许单个项目有与其他项目不一样的对齐方式，可覆盖align-items属性。]">align-self:</label>
+					<select class="select" onchange="valChange()" id="align-self">
+						<option value="default">auto</option>
+						<option value="stretch">stretch</option>
+						<option value="flex-start">flex-start</option>
+						<option value="flex-end">flex-end</option>
+						<option value="center">center</option>
+						<option value="baseline">baseline</option>
+					</select>
+					<label class="attribute" for="line-height" title="[子栏目行高]">line-height:</label>
+					<select class="select" onchange="valChange()" id="line-height" title="行高设置">
+						<option value="default">100px</option>
+						<option value="300px">300px</option>
+						<option value="500px">500px</option>
+					</select>
+					<label class="attribute" for="height" title="[子栏目高度]">height:</label>
+					<select class="select" onchange="valChange()" id="height" title="高度设置">
+						<option value="default">100px</option>
+						<option value="300px">300px</option>
+						<option value="500px">300px</option>
+						<option value="auto">auto</option>
+					</select>
+					<label class="attribute" for="width" title="[子栏目宽度]">width:</label>
+					<select class="select" onchange="valChange()" id="width" title="宽度设置">
+						<option value="default">auto</option>
+						<option value="200px">100px</option>
+						<option value="400px">400px</option>
+						<option value="700px">700px</option>
+					</select>
+				</form>
+				<!-- <div id="css">
+				</div> -->
+			</div>
+			<div class="flex active" onclick="contentChange()">
+				<div class="flexBox" data-idx="0" onclick="contentChange()">1</div>
+				<div class="flexBox" data-idx="1" onclick="contentChange()">22</div>
+				<div class="flexBox" data-idx="2" onclick="contentChange()">333</div>
+				<div class="flexBox" data-idx="3" onclick="contentChange()">4444</div>
+				<div class="flexBox" data-idx="4" onclick="contentChange()">55555</div>
+				<div class="flexBox" data-idx="5" onclick="contentChange()">666666</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
